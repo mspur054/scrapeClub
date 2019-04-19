@@ -1,37 +1,50 @@
+import express from "express";
 import {
   getHTML,
-  getClubStats,
+  getClubCount,
   getAthleteStats,
   getProStats
 } from "./lib/scraper";
-import { get } from "https";
 
-async function ScrapeData() {
-  const mileClubPromise = getHTML("/clubs/473964");
+const app = express();
+
+app.get("/scrape", async (req, res, next) => {
+  console.log("scraping!");
+
   const jimPromise = getHTML("/pros/1635688");
   const sagePromise = getHTML("/pros/1595767");
   const timPromise = getHTML("/athletes/11205099");
   const mattPromise = getHTML("/athletes/6037601");
+  const cClubCount = await getClubCount();
 
-  const [mileHTML, jimHTML, sageHTML, timHTML, mattHTML] = await Promise.all([
-    mileClubPromise,
+  const [jimHTML, sageHTML, timHTML, mattHTML] = await Promise.all([
     jimPromise,
     sagePromise,
     timPromise,
     mattPromise
   ]);
 
-  const [mileFollowers, jimFollowers, mattFollowers] = await Promise.all([
-    getClubStats(mileHTML),
+  const [
+    jimFollowers,
+    sageFollowers,
+    timFollowers,
+    mattFollowers
+  ] = await Promise.all([
     getProStats(jimHTML),
+    getProStats(sageHTML),
+    getAthleteStats(timHTML),
     getAthleteStats(mattHTML)
   ]);
 
-  //   console.log(
-  //     `The club has ${mileFollowers} members and Jim has ${
-  //       jimFollowers.followersCount
-  //     }`
-  //   );
-}
+  console.log(
+    jimFollowers,
+    sageFollowers,
+    timFollowers,
+    mattFollowers,
+    cClubCount
+  );
 
-ScrapeData();
+  res.json({ jimFollowers, sageFollowers, timFollowers, mattFollowers });
+});
+
+app.listen(2066, () => console.log("running on port 2066"));
