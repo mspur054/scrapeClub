@@ -7,15 +7,31 @@ import {
 import { get } from "https";
 
 async function ScrapeData() {
-  //const html = await getHTML("https://www.strava.com/clubs/473964");
-  //const clubMembers = await getClubStats(html);
-  const html = await getHTML("https://www.strava.com/pros/1635688");
-  //Tim 11205099
-  //Sage
+  const mileClubPromise = getHTML("/clubs/473964");
+  const jimPromise = getHTML("/pros/1635688");
+  const sagePromise = getHTML("/pros/1595767");
+  const timPromise = getHTML("/athletes/11205099");
+  const mattPromise = getHTML("/athletes/6037601");
 
-  // const ath = await getAthleteStats(html);
-  const prop = await getProStats(html);
-  //console.log(`The club has ${clubMembers} members`);
+  const [mileHTML, jimHTML, sageHTML, timHTML, mattHTML] = await Promise.all([
+    mileClubPromise,
+    jimPromise,
+    sagePromise,
+    timPromise,
+    mattPromise
+  ]);
+
+  const [mileFollowers, jimFollowers, mattFollowers] = await Promise.all([
+    getClubStats(mileHTML),
+    getProStats(jimHTML),
+    getAthleteStats(mattHTML)
+  ]);
+
+  //   console.log(
+  //     `The club has ${mileFollowers} members and Jim has ${
+  //       jimFollowers.followersCount
+  //     }`
+  //   );
 }
 
 ScrapeData();
