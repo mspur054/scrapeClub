@@ -43,4 +43,4 @@ app.get("/scrape", async (req, res, next) => {
   res.json({ jimFollowers, sageFollowers, mattFollowers, timFollowers });
 });
 
-app.listen(2066, () => console.log("running on port 2066"));
+app.listen(process.env.PORT, () => console.log("running on port 2066"));

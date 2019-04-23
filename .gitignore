@@ -24,3 +24,4 @@ yarn-error.log*
 public/Sound/Songs/665801637557.pdf
 db.json
 db.json
+.env
