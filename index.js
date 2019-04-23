@@ -7,7 +7,7 @@ import {
   getProStats,
   runCron
 } from "./lib/scraper";
-//import "./lib/cron";
+import "./lib/cron";
 
 const app = express();
 
