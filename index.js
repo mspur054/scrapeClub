@@ -1,5 +1,6 @@
 import express from "express";
 import db from "./lib/db";
+import { uniqueCount } from "./lib/utils";
 import {
   getHTML,
   getClubCount,
@@ -41,6 +42,24 @@ app.get("/scrape", async (req, res, next) => {
   runCron();
 
   res.json({ jimFollowers, sageFollowers, mattFollowers, timFollowers });
+});
+
+app.get("/data", async (req, res, next) => {
+  const mileClubRef = db.collection("mileclub");
+  var mileClub = await mileClubRef
+    .orderBy("date", "desc")
+    .limit(100)
+    .get()
+    .then(function(querySnapshot) {
+      return querySnapshot.docs.map(doc => doc.data());
+    })
+    .catch(function(err) {
+      console.log("Error getting cached collection", error);
+    });
+
+  const uniqueMileClub = uniqueCount(mileClub);
+
+  res.json({ uniqueMileClub });
 });
 
 app.listen(process.env.PORT, () => console.log("running on port 2066"));
