@@ -1,14 +1,16 @@
 import express from "express";
 import db from "./lib/db";
-import { uniqueCount } from "./lib/utils";
+import {
+  uniqueCount,
+  getFirebaseData,
+  uniqueAthleteFollowers
+} from "./lib/utils";
 import {
   getHTML,
   getClubCount,
   getAthleteStats,
-  getProStats,
-  runCron
+  getProStats
 } from "./lib/scraper";
-import "./lib/cron";
 
 const app = express();
 
@@ -39,27 +41,17 @@ app.get("/scrape", async (req, res, next) => {
     getAthleteStats(mattHTML)
   ]);
 
-  runCron();
-
   res.json({ jimFollowers, sageFollowers, mattFollowers, timFollowers });
 });
 
 app.get("/data", async (req, res, next) => {
-  const mileClubRef = db.collection("mileclub");
-  var mileClub = await mileClubRef
-    .orderBy("date", "desc")
-    .limit(100)
-    .get()
-    .then(function(querySnapshot) {
-      return querySnapshot.docs.map(doc => doc.data());
-    })
-    .catch(function(err) {
-      console.log("Error getting cached collection", error);
-    });
-
+  const uniqueAthletes = uniqueAthleteFollowers(
+    await getFirebaseData(db, "athletes")
+  );
+  const mileClub = await getFirebaseData(db, "mileclub");
   const uniqueMileClub = uniqueCount(mileClub);
 
-  res.json({ uniqueMileClub });
+  res.json({ uniqueMileClub, uniqueAthletes });
 });
 
 app.listen(process.env.PORT, () => console.log("running on port 2066"));

@@ -1,2 +1,2 @@
 web: node -r esm index.js
-worker: node worker
+worker: node -r esm worker.js
