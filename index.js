@@ -9,7 +9,8 @@ import {
   getHTML,
   getClubCount,
   getAthleteStats,
-  getProStats
+  getProStats,
+  runCron
 } from "./lib/scraper";
 
 const app = express();
@@ -40,6 +41,8 @@ app.get("/scrape", async (req, res, next) => {
     getAthleteStats(timHTML),
     getAthleteStats(mattHTML)
   ]);
+
+  runCron();
 
   res.json({ jimFollowers, sageFollowers, mattFollowers, timFollowers });
 });
